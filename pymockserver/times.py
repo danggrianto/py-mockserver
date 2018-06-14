@@ -2,14 +2,14 @@ class RequestTimes(object):
     """Times object for request
     """
 
-    def __init__(self, remaining=1, unlimited=True):
+    def __init__(self, remainingTimes=1, unlimited=True):
         """
         Request Time initialization
-        :param int remaining: Remaining times for request to expire
+        :param int remainingTimes: Remaining times for request to expire
         :param boolean unlimited: Unlimited times for request, overwrite
-        remaining
+        remainingTimes
         """
-        self.remaining = remaining
+        self.remainingTimes = remainingTimes
         self.unlimited = unlimited
 
 

@@ -26,7 +26,7 @@ class Client(object):
         """
         return 'http://{}:{}'.format(self.host, self.port)
 
-    def expectation(self, request, response):
+    def expectation(self, request, response, times=None):
         """create expectation on mockserver
 
         :param Request httpRequest object
@@ -34,8 +34,14 @@ class Client(object):
         """
         data = {
             'httpRequest': request.dict(),
-            'httpResponse': response.dict()
+            'httpResponse': response.dict(),
+            'times': {
+                'remainingTimes': 1,
+                'unlimited': True
+            }
         }
+        if times:
+            data['times'] = vars(times)
         req = requests.put('{}/expectation'.format(self._get_url()),
                            json.dumps(data))
         return req
@@ -54,13 +60,16 @@ class Client(object):
                 return []
         return []
 
-    def retrieve_requests(self):
+    def retrieve_requests(self, request=None):
         """Get all recorded requests
 
         :return Array recorded requests
         """
+        data = {}
+        if request:
+            data = request.dict()
         req = requests.put('{}/retrieve'.format(self._get_url()),
-                           params={'type': 'requests'})
+                           params={'type': 'requests'}, data=json.dumps(data))
         if req.status_code == 200:
             try:
                 return req.json()
@@ -79,7 +88,7 @@ class Client(object):
             'httpRequest': request.dict()
         }
         if times:
-            data['times'] = times.dict()
+            data['times'] = vars(times)
         else:
             data['times'] = {
                 'count': 1,

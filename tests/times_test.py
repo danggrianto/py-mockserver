@@ -6,12 +6,12 @@ class RequestTimesTest(TestCase):
 
     def test_init_default(self):
         times = RequestTimes()
-        self.assertEqual(1, times.remaining)
+        self.assertEqual(1, times.remainingTimes)
         self.assertTrue(times.unlimited)
 
     def test_init_with_value(self):
-        times = RequestTimes(remaining=2, unlimited=False)
-        self.assertEqual(2, times.remaining)
+        times = RequestTimes(remainingTimes=2, unlimited=False)
+        self.assertEqual(2, times.remainingTimes)
         self.assertFalse(times.unlimited)
 
 
