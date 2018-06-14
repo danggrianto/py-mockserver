@@ -1,6 +1,8 @@
 # py-mockserver
 mockserver client for james bloom's mockserver https://github.com/jamesdbloom/mockserver
 
+[![Build Status](https://travis-ci.org/danggrianto/py-mockserver.svg?branch=master)](https://travis-ci.org/danggrianto/py-mockserver)
+
 ## installation
 
 ```
