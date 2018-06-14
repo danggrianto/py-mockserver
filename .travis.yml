@@ -1,4 +1,5 @@
 language: python
+script: pytest tests/
 deploy:
   provider: pypi
   user: danggrianto
