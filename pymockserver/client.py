@@ -15,6 +15,9 @@ class Client(object):
         """
         self.host = host
         self.port = port
+        self.headers = {
+            'Content-Type': 'application/json'
+        }
 
     def _get_url(self):
         """Get full URL of the mockserver
@@ -64,3 +67,35 @@ class Client(object):
             except ValueError:
                 return []
         return []
+
+    def verify(self, request, times=None):
+        """Verify if a request has been received in specific number of times
+
+        :param Request request: Request object to verify
+        :param Times times: Times object for count. Default=None, count=1
+        :return Boolean true if verified, false if not
+        """
+        data = {
+            'httpRequest': request.dict()
+        }
+        if times:
+            data['times'] = times.dict()
+        else:
+            data['times'] = {
+                'count': 1,
+                'exact': True
+            }
+        req = requests.put('{}/verify'.format(self._get_url()),
+                           headers=self.headers,
+                           data=json.dumps(data))
+        resp = {
+            'status': 'ERROR',
+            'reason': req.content.decode('utf-8')
+        }
+        if req.status_code == 202:
+            resp['reason'] = None
+            resp['status'] = 'FOUND'
+        elif req.status_code == 406:
+            resp['status'] = 'NOT_FOUND'
+
+        return resp

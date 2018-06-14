@@ -1,0 +1,28 @@
+from pymockserver import VerificationTimes, RequestTimes
+from unittest import TestCase
+
+
+class RequestTimesTest(TestCase):
+
+    def test_init_default(self):
+        times = RequestTimes()
+        self.assertEqual(1, times.remaining)
+        self.assertTrue(times.unlimited)
+
+    def test_init_with_value(self):
+        times = RequestTimes(remaining=2, unlimited=False)
+        self.assertEqual(2, times.remaining)
+        self.assertFalse(times.unlimited)
+
+
+class VerificationTimesTest(TestCase):
+
+    def test_init_default(self):
+        times = VerificationTimes()
+        self.assertEqual(1, times.count)
+        self.assertTrue(times.exact)
+
+    def test_init_with_value(self):
+        times = VerificationTimes(count=2, exact=False)
+        self.assertEqual(2, times.count)
+        self.assertFalse(times.exact)

@@ -12,6 +12,9 @@ class ClientTest(TestCase):
     def setUpClass(cls):
         cls.client = Client('localhost', 1080)
         cls.base_url = 'http://localhost:1080'
+        cls.header = {
+            'Content-Type': 'application/json'
+        }
 
     def test_init(self):
         self.assertEqual('localhost', self.client.host)
@@ -55,3 +58,38 @@ class ClientTest(TestCase):
         mocked.assert_called_with('{}/retrieve'.format(self.base_url),
                                   params={'type': 'requests'})
         self.assertEqual([], requests)
+
+    @patch('pymockserver.client.requests.put')
+    def test_verify_ok(self, mocked):
+        mocked.return_value.status_code = 202
+        request = Request('/hello', 'POST')
+        verified = self.client.verify(request)
+        data = {
+            'httpRequest': request.dict(),
+            'times': {
+                'count': 1,
+                'exact': True
+            }
+        }
+        mocked.assert_called_with('{}/verify'.format(self.base_url),
+                                  headers=self.header,
+                                  data=json.dumps(data))
+        self.assertEqual('FOUND', verified['status'])
+
+    @patch('pymockserver.client.requests.put')
+    def test_verify_not_found(self, mocked):
+        mocked.return_value.status_code = 406
+        mocked.return_value.content = b'hello'
+        request = Request('/hello', 'POST')
+        verified = self.client.verify(request)
+        self.assertEqual('NOT_FOUND', verified['status'])
+        self.assertEqual('hello', verified['reason'])
+
+    @patch('pymockserver.client.requests.put')
+    def test_verify_error(self, mocked):
+        mocked.return_value.status_code = 400
+        mocked.return_value.content = b'hello'
+        request = Request('/hello', 'POST')
+        verified = self.client.verify(request)
+        self.assertEqual('ERROR', verified['status'])
+        self.assertEqual('hello', verified['reason'])
