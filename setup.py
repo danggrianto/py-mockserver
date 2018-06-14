@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="py-mockserver",
-    version="0.1",
+    version="0.1.1",
     author="Daniel Anggrianto",
     author_email="d.anggrianto@gmail.com",
     description="Python client for mockserver",
