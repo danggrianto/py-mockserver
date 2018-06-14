@@ -1,6 +1,8 @@
 import requests
 import json
 
+from urllib3.exceptions import HTTPError
+
 
 class Client(object):
 
@@ -108,3 +110,14 @@ class Client(object):
             resp['status'] = 'NOT_FOUND'
 
         return resp
+
+    def reset(self):
+        """delete all active expectations and recorded requests"""
+        requests.put('{}/reset'.format(self._get_url()))
+
+    def clear(self, request):
+        """Delete active expectation and recorded request
+
+        :param Request request: Request to clear
+        """
+        requests.put('{}/clear'.format(self._get_url()), data=request.json())

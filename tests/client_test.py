@@ -158,3 +158,15 @@ class ClientTest(TestCase):
                                   params={'type': 'requests'},
                                   data=request.json())
         self.assertEqual([], requests)
+
+    @patch('pymockserver.client.requests.put')
+    def test_reset(self, mocked):
+        self.client.reset()
+        mocked.assert_called_with('{}/reset'.format(self.base_url))
+
+    @patch('pymockserver.client.requests.put')
+    def test_clear(self, mocked):
+        request = Request('/hello', 'POST')
+        self.client.clear(request)
+        mocked.assert_called_with('{}/clear'.format(self.base_url),
+                                  data=request.json())
