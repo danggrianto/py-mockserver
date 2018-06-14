@@ -122,7 +122,8 @@ class ClientTest(TestCase):
         mocked.assert_called_with('{}/verify'.format(self.base_url),
                                   headers=self.header,
                                   data=json.dumps(data))
-        self.assertEqual('FOUND', verified['status'])
+        self.assertTrue(verified['found'])
+        self.assertEqual('OK', verified['status'])
 
     @patch('pymockserver.client.requests.put')
     def test_verify_not_found(self, mocked):
@@ -130,7 +131,8 @@ class ClientTest(TestCase):
         mocked.return_value.content = b'hello'
         request = Request('/hello', 'POST')
         verified = self.client.verify(request)
-        self.assertEqual('NOT_FOUND', verified['status'])
+        self.assertFalse(verified['found'])
+        self.assertEqual('OK', verified['status'])
         self.assertEqual('hello', verified['reason'])
 
     @patch('pymockserver.client.requests.put')

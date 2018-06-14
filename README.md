@@ -51,3 +51,5 @@ def get_recorded_request_match():
     requests = client.retrieve_requests(request)
 ```
 
+### Examples
+all other examples can be seen in `integration_test.py`

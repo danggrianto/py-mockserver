@@ -100,14 +100,17 @@ class Client(object):
                            headers=self.headers,
                            data=json.dumps(data))
         resp = {
-            'status': 'ERROR',
-            'reason': req.content.decode('utf-8')
+            'status': 'OK',
+            'reason': req.content.decode('utf-8'),
+            'found': None
         }
         if req.status_code == 202:
             resp['reason'] = None
-            resp['status'] = 'FOUND'
+            resp['found'] = True
         elif req.status_code == 406:
-            resp['status'] = 'NOT_FOUND'
+            resp['found'] = False
+        else:
+            resp['status'] = 'ERROR'
 
         return resp
 
