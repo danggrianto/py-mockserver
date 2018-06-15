@@ -1,10 +1,12 @@
 from unittest import TestCase
 import requests
+from pytest import mark
 
 from pymockserver import Client, Request, Response
 from pymockserver import RequestTimes, VerificationTimes
 
 
+@mark.integration
 class IntegrationTests(TestCase):
     @classmethod
     def setUpClass(cls):

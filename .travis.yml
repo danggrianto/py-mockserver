@@ -1,7 +1,7 @@
 language: python
 python:
   - "3.6"
-script: pytest tests/
+script: pytest tests/ -m "not integration"
 deploy:
   provider: pypi
   user: danggrianto
