@@ -12,6 +12,7 @@ class RequestTest(TestCase):
     def test_init(self):
         self.assertEqual('/somepath', self.request.path)
         self.assertEqual('POST', self.request.method)
+        self.assertEqual(False, self.request.keepAlive)
 
     def test_dict(self):
         self.assertEqual({

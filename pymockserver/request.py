@@ -8,7 +8,7 @@ class Request(object):
     """
     path = ''
     method = ''
-    keepAlive = True
+    keepAlive = False
 
     def __init__(self, path, method):
         """Initializing httpRequest object
