@@ -31,12 +31,33 @@ class Client(object):
     def expectation(self, request, response, times=None):
         """create expectation on mockserver
 
-        :param Request httpRequest object
-        :param Response httpResponse object
+        :param request httpRequest object
+        :param response httpResponse object
         """
         data = {
             'httpRequest': request.dict(),
             'httpResponse': response.dict(),
+            'times': {
+                'remainingTimes': 1,
+                'unlimited': True
+            }
+        }
+        if times:
+            data['times'] = vars(times)
+        req = requests.put('{}/expectation'.format(self._get_url()),
+                           json.dumps(data))
+        return req
+
+    def forward(self, request, forward, times=None):
+        """create forwarding on mockserver
+
+        :param times: times object (optional)
+        :param request httpRequest object
+        :param forward httpResponse object
+        """
+        data = {
+            'httpRequest': request.dict(),
+            'httpForward': forward.dict(),
             'times': {
                 'remainingTimes': 1,
                 'unlimited': True

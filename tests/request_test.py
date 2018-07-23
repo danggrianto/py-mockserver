@@ -7,12 +7,12 @@ from unittest import TestCase
 class RequestTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.request = Request('/somepath', 'POST')
+        cls.request = Request('/somepath', 'POST', keepAlive=True)
 
     def test_init(self):
         self.assertEqual('/somepath', self.request.path)
         self.assertEqual('POST', self.request.method)
-        self.assertEqual(False, self.request.keepAlive)
+        self.assertEqual(True, self.request.keepAlive)
 
     def test_dict(self):
         self.assertEqual({
