@@ -7,6 +7,7 @@ from pymockserver import Request
 from pymockserver import Response
 from pymockserver import RequestTimes
 from pymockserver import VerificationTimes
+from pymockserver.forward import Forward
 
 
 class ClientTest(TestCase):
@@ -26,16 +27,40 @@ class ClientTest(TestCase):
         self.assertEqual(self.base_url, self.client._get_url())
 
     @patch('pymockserver.client.requests.put')
-    def test_expectation_no_times(self, mocked_put):
+    def test_forward_no_times(self, mocked_put):
         request = Request('/hello', 'POST')
-        response = Response(200, 'world')
-        response = self.client.expectation(request, response)
+        response = Forward('1.2.3.4', 8080)
+        self.client.forward(request, response)
 
         data = {
             'httpRequest': {
                 'path': '/hello',
-                'method': 'POST',
-                'keepAlive': True
+                'method': 'POST'
+            },
+            'httpForward': {
+                'host': '1.2.3.4',
+                'port': 8080,
+                'scheme': 'HTTP'
+            },
+            'times': {
+                'remainingTimes': 1,
+                'unlimited': True
+            }
+        }
+        mocked_put.assert_called_with('{}/expectation'.format(self.base_url),
+                                      json.dumps(data))
+
+
+    @patch('pymockserver.client.requests.put')
+    def test_expectation_no_times(self, mocked_put):
+        request = Request('/hello', 'POST')
+        response = Response(200, 'world')
+        self.client.expectation(request, response)
+
+        data = {
+            'httpRequest': {
+                'path': '/hello',
+                'method': 'POST'
             },
             'httpResponse': {
                 'statusCode': 200,
@@ -54,13 +79,12 @@ class ClientTest(TestCase):
         request = Request('/hello', 'POST')
         response = Response(200, 'world')
         times = RequestTimes(2, False)
-        response = self.client.expectation(request, response, times)
+        self.client.expectation(request, response, times)
 
         data = {
             'httpRequest': {
                 'path': '/hello',
-                'method': 'POST',
-                'keepAlive': True
+                'method': 'POST'
             },
             'httpResponse': {
                 'statusCode': 200,

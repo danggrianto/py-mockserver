@@ -8,9 +8,9 @@ class Request(object):
     """
     path = ''
     method = ''
-    keepAlive = False
+    keepAlive = None
 
-    def __init__(self, path, method):
+    def __init__(self, path, method, keepAlive=None):
         """Initializing httpRequest object
 
         :param str path: path endpoint
@@ -18,17 +18,20 @@ class Request(object):
         """
         self.path = path
         self.method = method
+        self.keepAlive = keepAlive
 
     def dict(self):
         """return dictionary of the request object
 
         :return dict of httpRequest object
         """
-        return {
+        dct = {
             'path': self.path,
-            'method': self.method.upper(),
-            'keepAlive': self.keepAlive
+            'method': self.method.upper()
         }
+        if self.keepAlive:
+            dct['keepAlive'] = self.keepAlive
+        return dct
 
     def json(self):
         """get json format of this object
