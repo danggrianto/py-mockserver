@@ -123,8 +123,7 @@ class ClientTest(TestCase):
         data = {
             'httpRequest': request.dict(),
             'times': {
-                'count': 2,
-                'exact': False
+                'atLeast': 2
             }
         }
         mocked.assert_called_with('{}/verify'.format(self.base_url),
@@ -139,8 +138,8 @@ class ClientTest(TestCase):
         data = {
             'httpRequest': request.dict(),
             'times': {
-                'count': 1,
-                'exact': True
+                'atLeast': 1,
+                'atMost': 1
             }
         }
         mocked.assert_called_with('{}/verify'.format(self.base_url),

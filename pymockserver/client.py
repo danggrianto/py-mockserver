@@ -114,8 +114,8 @@ class Client(object):
             data['times'] = vars(times)
         else:
             data['times'] = {
-                'count': 1,
-                'exact': True
+                'atLeast': 1,
+                'atMost': 1
             }
         req = requests.put('{}/verify'.format(self._get_url()),
                            headers=self.headers,
