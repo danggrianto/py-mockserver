@@ -18,5 +18,6 @@ class VerificationTimes(object):
     """
 
     def __init__(self, count=1, exact=True):
-        self.count = count
-        self.exact = exact
+        self.atLeast = count
+        if exact:
+            self.atMost = count

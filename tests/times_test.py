@@ -19,10 +19,10 @@ class VerificationTimesTest(TestCase):
 
     def test_init_default(self):
         times = VerificationTimes()
-        self.assertEqual(1, times.count)
-        self.assertTrue(times.exact)
+        self.assertEqual(1, times.atLeast)
+        self.assertEqual(1, times.atMost)
 
     def test_init_with_value(self):
         times = VerificationTimes(count=2, exact=False)
-        self.assertEqual(2, times.count)
-        self.assertFalse(times.exact)
+        self.assertEqual(2, times.atLeast)
+        self.assertFalse(hasattr(times, "atMost"))
