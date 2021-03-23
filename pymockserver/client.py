@@ -1,22 +1,26 @@
 import requests
 import json
-
-from urllib3.exceptions import HTTPError
+from urllib.parse import urljoin
 
 
 class Client(object):
 
     """Client to connect to the mockserver"""
 
-    def __init__(self, host='localhost', port=1080):
+    def __init__(self, host='localhost', port=1080, scheme='http', verify_ca=False):
         """
         Class initialization
 
         :param str host: host of the mockserver
         :param int port: port of the mockserver
+        :param str scheme: the scheme to use to connect to the mockserver('http', 'https')
+        :param boolean/str verify_ca: (only valid for scheme 'https') if True or a path to a ca certificate the ssl
+                                      certificate of the mock server will be verified
         """
         self.host = host
         self.port = port
+        self.scheme = scheme
+        self.verify_ca = verify_ca
         self.headers = {
             'Content-Type': 'application/json'
         }
@@ -26,7 +30,12 @@ class Client(object):
 
         :return str url of the mockserver
         """
-        return 'http://{}:{}'.format(self.host, self.port)
+        return '{}://{}:{}'.format(self.scheme, self.host, self.port)
+
+    def _put(self, path, *args, **kwargs):
+        if self.scheme == 'https':
+            kwargs['verify'] = self.verify_ca
+        return requests.put(urljoin(self._get_url(), path), *args, **kwargs)
 
     def expectation(self, request, response, times=None):
         """create expectation on mockserver
@@ -44,8 +53,8 @@ class Client(object):
         }
         if times:
             data['times'] = vars(times)
-        req = requests.put('{}/expectation'.format(self._get_url()),
-                           json.dumps(data))
+        req = self._put('/expectation',
+                        json.dumps(data))
         return req
 
     def forward(self, request, forward, times=None):
@@ -65,8 +74,8 @@ class Client(object):
         }
         if times:
             data['times'] = vars(times)
-        req = requests.put('{}/expectation'.format(self._get_url()),
-                           json.dumps(data))
+        req = self._put('/expectation',
+                        json.dumps(data))
         return req
 
     def active_expectations(self):
@@ -74,8 +83,7 @@ class Client(object):
 
         :return Array active expectations
         """
-        req = requests.put(
-            '{}/retrieve'.format(self._get_url()), params={'type': 'active_expectations'})
+        req = self._put('/retrieve', params={'type': 'active_expectations'})
         if req.status_code == 200:
             try:
                 return req.json()
@@ -91,8 +99,9 @@ class Client(object):
         data = {}
         if request:
             data = request.dict()
-        req = requests.put('{}/retrieve'.format(self._get_url()),
-                           params={'type': 'requests'}, data=json.dumps(data))
+        req = self._put('/retrieve',
+                        params={'type': 'requests'},
+                        data=json.dumps(data))
         if req.status_code == 200:
             try:
                 return req.json()
@@ -117,9 +126,9 @@ class Client(object):
                 'count': 1,
                 'exact': True
             }
-        req = requests.put('{}/verify'.format(self._get_url()),
-                           headers=self.headers,
-                           data=json.dumps(data))
+        req = self._put('/verify',
+                        headers=self.headers,
+                        data=json.dumps(data))
         resp = {
             'status': 'OK',
             'reason': req.content.decode('utf-8'),
@@ -137,11 +146,11 @@ class Client(object):
 
     def reset(self):
         """delete all active expectations and recorded requests"""
-        requests.put('{}/reset'.format(self._get_url()))
+        self._put('/reset')
 
     def clear(self, request):
         """Delete active expectation and recorded request
 
         :param Request request: Request to clear
         """
-        requests.put('{}/clear'.format(self._get_url()), data=request.json())
+        self._put('/clear', data=request.json())

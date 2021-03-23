@@ -21,10 +21,22 @@ class ClientTest(TestCase):
 
     def test_init(self):
         self.assertEqual('localhost', self.client.host)
+        self.assertEqual('http', self.client.scheme)
         self.assertEqual(1080, self.client.port)
+
+    def test_init_with_ssl(self):
+        client = Client('localhost', 443, 'https', True)
+        self.assertEqual('localhost', client.host)
+        self.assertEqual('https', client.scheme)
+        self.assertEqual(443, client.port)
+        self.assertEqual(True, client.verify_ca)
 
     def test_get_url(self):
         self.assertEqual(self.base_url, self.client._get_url())
+
+    def test_get_url_with_ssl(self):
+        client = Client('localhost', 443, 'https', True)
+        self.assertEqual("https://localhost:443", client._get_url())
 
     @patch('pymockserver.client.requests.put')
     def test_forward_no_times(self, mocked_put):
